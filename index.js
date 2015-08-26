@@ -13,27 +13,33 @@ function SizeStream (n, cb) {
   this.pending = this.size
   this.cb = cb
   this.once('finish', function () {
-    self._current.push(null)
+    if (self._current) self._current.push(null)
   })
-  cb(this._current = this._newReadable())
 }
 
 SizeStream.prototype._write = function (buf, enc, next) {
+  if (buf.length === 0) return next()
   for (var i = 0; i < buf.length; i = j) {
+    if (!this._current) {
+      this.cb(this._current = this._newReadable())
+    }
     var j = Math.min(buf.length, i + this.pending)
     this._current.push(buf.slice(i, j))
     this.pending -= j - i
     if (this.pending === 0) {
       this.pending = this.size
       this._current.push(null)
-      this.cb(this._current = this._newReadable())
+      this._current = null
     }
   }
   this._advance(next)
 }
 
 SizeStream.prototype._advance = function (next) {
-  if (this._ready) {
+  if (this._current === null) {
+    next()
+  }
+  else if (this._ready) {
     this._ready = false
     next()
   }
