@@ -16,5 +16,23 @@
     "chunky": "0.0.0",
     "concat-stream": "^1.5.0",
     "tape": "^4.2.0"
-  }
+  },
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/substack/fixed-size-stream-splitter.git"
+  },
+  "keywords": [
+    "stream",
+    "block",
+    "size",
+    "split"
+  ],
+  "bugs": {
+    "url": "https://github.com/substack/fixed-size-stream-splitter/issues"
+  },
+  "homepage": "https://github.com/substack/fixed-size-stream-splitter#readme"
 }
