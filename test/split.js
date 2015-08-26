@@ -14,7 +14,8 @@ test('split 5', function (t) {
   t.plan(expected.length)
   var w = splitter(5, function (stream) {
     stream.pipe(concat(function (body) {
-      t.equal(body.toString(), expected.shift())
+      var ex = expected.shift()
+      t.equal(body.toString(), ex, ex)
     }))
   })
   w.write('abcdefghijklmn')

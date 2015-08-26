@@ -10,7 +10,7 @@ function SizeStream (n, cb) {
   var self = this
   Writable.call(this)
   this.size = n
-  this.pos = 0
+  this.pending = this.size
   this.cb = cb
   this.once('finish', function () {
     self._current.push(null)
@@ -19,21 +19,20 @@ function SizeStream (n, cb) {
 }
 
 SizeStream.prototype._write = function (buf, enc, next) {
-  if (buf.length + this.pos < this.size) {
-    this.pos += buf.length
-    this._current.push(buf)
-    return next()
-  }
-  for (var i = 0; i < buf.length; i += this.size) {
-    var j = Math.min(buf.length, i + this.size - this.pos)
+  for (var i = 0; i < buf.length; i = j) {
+    var j = Math.min(buf.length, i + this.pending)
     this._current.push(buf.slice(i, j))
-    if (j < buf.length) {
+    this.pending -= j - i
+    if (this.pending === 0) {
+      this.pending = this.size
       this._current.push(null)
       this.cb(this._current = this._newReadable())
-      this.pos = 0
     }
-    else this.pos = buf.length - i
   }
+  this._advance(next)
+}
+
+SizeStream.prototype._advance = function (next) {
   if (this._ready) {
     this._ready = false
     next()
