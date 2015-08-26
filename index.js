@@ -15,7 +15,7 @@ function SizeStream (n, cb) {
   this.once('finish', function () {
     self._current.push(null)
   })
-  cb(this._current = newReadable())
+  cb(this._current = this._newReadable())
 }
 
 SizeStream.prototype._write = function (buf, enc, next) {
@@ -29,16 +29,28 @@ SizeStream.prototype._write = function (buf, enc, next) {
     this._current.push(buf.slice(i, j))
     if (j < buf.length) {
       this._current.push(null)
-      this.cb(this._current = newReadable())
+      this.cb(this._current = this._newReadable())
       this.pos = 0
     }
     else this.pos = buf.length - i
   }
-  next()
+  if (this._ready) {
+    this._ready = false
+    next()
+  }
+  else this._next = next
 }
 
-function newReadable () {
+SizeStream.prototype._newReadable = function () {
+  var self = this
   var r = new Readable
-  r._read = function () {}
+  r._read = function () {
+    var n = self._next
+    if (n) {
+      self._next = null
+      n()
+    }
+    else self._ready = true
+  }
   return r
 }
