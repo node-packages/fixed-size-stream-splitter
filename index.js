@@ -5,12 +5,14 @@ var inherits = require('inherits')
 module.exports = SizeStream
 inherits(SizeStream, Writable)
 
-function SizeStream (n, cb) {
-  if (!(this instanceof SizeStream)) return new SizeStream(n, cb)
+function SizeStream (opts, cb) {
+  if (!(this instanceof SizeStream)) return new SizeStream(opts, cb)
   var self = this
   Writable.call(this)
-  this.size = n
-  this.pending = this.size
+  if (!opts) opts = {}
+  if (typeof opts === 'number') opts = { size: opts }
+  this.size = opts.size
+  this.pending = this.size - (opts.offset || 0) % this.size
   this.cb = cb
   this.once('finish', function () {
     if (self._current) self._current.push(null)
