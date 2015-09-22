@@ -39,9 +39,13 @@ var splitter = require('fixed-size-stream-splitter')
 ```
 
 ## var wstream = splitter(size, cb)
+## var wstream = splitter(opts, cb)
 
 Return a writable stream `wstream` that will split its input into streams of
-`size` bytes. Each stream is available in `cb(stream)`.
+`opts.size` bytes. Each stream is available in `cb(stream)`.
+
+Use `opts.offset` to emit a first chunk that is smaller than `opts.size` by
+`opts.offset % opts.size` bytes.
 
 # install
 
