@@ -1,6 +1,6 @@
 {
   "name": "fixed-size-stream-splitter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "split a stream into many fixed-size streams",
   "main": "index.js",
   "scripts": {
